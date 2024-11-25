@@ -5,6 +5,7 @@ This repository contains a minimalistic elixir application that adds the depende
 ## How to run
 
 ```bash
+cd system
 ./run-compose.sh
 ```
 
