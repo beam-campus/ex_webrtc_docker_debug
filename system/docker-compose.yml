@@ -1,20 +1,19 @@
-version: "3.5"
-
-
-networks:
-  
-  min_net:
-    driver: bridge
-    name: min_net
-
+volumes:
+  min_webrtc:
+    driver: local
+    driver_opts:
+      type: none
+      device: /min_webrtc
+      o: bind
 
 services:
-
-  min-webrtc:
-    image: local/min-webrtc
+  webrtc-debug:
+    image: local/webrtc-debug:latest
     build:
-      context: "."
-      dockerfile: "Dockerfile"
-    container_name: min-webrtc
+      context: .
+    container_name: webrtc-debug
+    restart: no
     network_mode: host
+    volumes:
+      - min_webrtc:/system
 

@@ -7,6 +7,8 @@ defmodule MinimalWebRtc.Application do
 
   @impl true
   def start(_type, _args) do
+    IO.puts("Hello from MinimalWebRtc.Application!!")
+
     children = [
       # Starts a worker by calling: MinimalWebRtc.Worker.start_link(arg)
       # {MinimalWebRtc.Worker, arg}

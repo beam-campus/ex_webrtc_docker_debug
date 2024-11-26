@@ -8,7 +8,6 @@ ARG RUST_VERSION=1.82.0
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-${OS_TYPE}-${OS_VERSION}"
 ARG RUNNER_IMAGE="${OS_TYPE}:${OS_VERSION}"
 
-
 ##########################################
 ################# BUILDER ################
 ##########################################
@@ -83,9 +82,9 @@ RUN chown nobody /system
 
 COPY --from=builder --chown=nobody /build_space/_build/prod/rel/minimal_web_rtc .
 
-COPY debug.sh .
+COPY entrypoint.sh .
 
-RUN chmod +x debug.sh
+RUN chmod +x entrypoint.sh
 
 USER nobody
 
@@ -96,4 +95,4 @@ EXPOSE 5000-5010/udp
 ENV HOME=/system
 ENV MIX_ENV="prod"
 
-CMD ["./debug.sh"]
+CMD ["./entrypoint.sh"]
