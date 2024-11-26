@@ -1,6 +1,7 @@
 # ex_webrtc_docker_debug
 
-This repository contains a minimalistic elixir application that adds the dependencies ex_webrtc and ex_sctp. Its  purpose is to build a minimal elixir application capable of running from a docker container and debugging it.
+This repository contains a minimalistic elixir application that adds the dependencies _ex_webrtc_ and _ex_sctp_. 
+Its  purpose is to build a minimal elixir WebRTC application capable of running from a docker container.
 
 ## How to run
 
