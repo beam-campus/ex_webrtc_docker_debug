@@ -11,7 +11,8 @@ ARG RUNNER_IMAGE="${OS_TYPE}:${OS_VERSION}"
 ##########################################
 ################# BUILDER ################
 ##########################################
-FROM ${BUILDER_IMAGE} AS builder
+# FROM ${BUILDER_IMAGE} AS builder
+FROM elixir:latest
 
 ARG APP=minimal_web_rtc
 
@@ -25,8 +26,6 @@ RUN echo "Install rustup and Rust v${RUST_VERSION}"
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && ~/.cargo/bin/rustup install 1.82.0 \
     && ~/.cargo/bin/rustup default 1.82.0
-
-
 
 # Add Cargo to PATH
 ENV PATH="/root/.cargo/bin:${PATH}"
@@ -50,50 +49,22 @@ ENV ERL_LIBS=/usr/lib/erlang/lib
 
 COPY ${APP} .
 
+
 # install mix dependencies
-RUN MIX_ENV="prod" mix local.hex --force && \
-    MIX_ENV="prod" mix do deps.get --only "prod", deps.update --all, deps.compile
+RUN MIX_ENV="dev" mix do deps.get, deps.update --all, deps.compile
 
-RUN MIX_ENV="prod" mix compile && \
-    MIX_ENV="prod" mix release minimal_web_rtc
-
-###################################
-########### RUNTIME ###############
-###################################
-FROM ${RUNNER_IMAGE} AS for_edge
-
-ARG APP=minimsl_web_rtc
-
-RUN apt-get update -y && \
-    apt-get install -y libstdc++6 pkg-config openssl libncurses5 locales ca-certificates curl systemd libc6 libnspr4 libnss3 libsrtp2-dev && \
-    apt-get upgrade -y --autoremove && \
-    apt-get clean && \
-    rm -f /var/lib/apt/lists/*_* 
-
-# Set the locale
-RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
-
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
-
-WORKDIR /system
-
-RUN chown nobody /system
-
-COPY --from=builder --chown=nobody /build_space/_build/prod/rel/minimal_web_rtc .
-
-COPY entrypoint.sh .
-
-RUN chmod +x entrypoint.sh
-
-USER nobody
-
-VOLUME /system
+VOLUME /build_space
 
 EXPOSE 5000-5010/udp
 
-ENV HOME=/system
-ENV MIX_ENV="prod"
+ENV HOME=/build_space
+ENV MIX_ENV="dev"
 
-CMD ["./entrypoint.sh"]
+RUN ls -la /usr/local/bin/
+RUN ls -la /usr/bin/
+
+COPY dbg-entrypoint.sh .
+RUN chmod +x dbg-entrypoint.sh
+
+#CMD ["iex", "-S", "mix"]
+CMD ["./dbg-entrypoint.sh"]

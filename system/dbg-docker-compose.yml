@@ -1,0 +1,20 @@
+volumes:
+  min_webrtc:
+    driver: local
+    driver_opts:
+      type: none
+      device: /min_webrtc
+      o: bind
+
+services:
+  webrtc-debug:
+    image: local/webrtc-debug:latest
+    build:
+      context: .
+      dockerfile: ./dbg.Dockerfile
+    container_name: webrtc-debug
+    restart: no
+    network_mode: host
+    volumes:
+      - min_webrtc:/build_space
+
